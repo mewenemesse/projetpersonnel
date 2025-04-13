@@ -17,7 +17,7 @@ class Ingenieur(models.Model):
     email = models.EmailField()
     telephone = models.CharField(max_length=15)
     categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE, related_name='ingenieurs')
-
+    dteNaissance = models.DateField()
     def __str__(self):
         return f"{self.prenom} {self.nom}"
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Ingenieur, Categorie
+from . models import Ingenieur, Categorie
 from .forms import IngenieurForm, CategorieForm, CustomUserCreationForm
 
 
@@ -63,14 +63,14 @@ def liste_ingenieurs(request):
 
 
 def modifyIngenieur(request,id):  
-    Ingenieur= Ingenieur.objects.get(id=id)
-    form = IngenieurForm(instance=Ingenieur)
+    ingenieur= Ingenieur.objects.get(id=id)
+    form = IngenieurForm(instance=ingenieur)
     if request.method == 'POST':
-        form = IngenieurForm(request.POST,instance=Ingenieur )
+        form = IngenieurForm(request.POST,instance=ingenieur )
         if form.is_valid():
             form.save()
-        return redirect ('Ingenieurs')
-    return render (request, 'modi_Ingenieur.html', {'form':form, 'Ingenieur':Ingenieur})
+        return redirect ('liste_ingenieurs')
+    return render (request, 'modi_Ingenieur.html', {'form':form, 'Ingenieur':ingenieur})
 
 
 
