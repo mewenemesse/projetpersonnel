@@ -9,7 +9,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     
-    
     path('index', views.Accueil, name='acceuil'),
     
     path('Dashboard/', views.Dashboard, name='Dashboard'),
@@ -33,7 +32,6 @@ urlpatterns = [
     path('inscription/', views.inscription, name='inscription'),
     
     path('', views.connexion, name='connexion'),
-    
     
     path('deconnexion/', views.deconnexion, name='deconnexion'),
 
