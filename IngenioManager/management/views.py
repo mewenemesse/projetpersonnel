@@ -1,78 +1,79 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from . models import Ingenieur, Categorie
+from django.views.decorators.http import require_POST, require_http_methods
+from .models import Ingenieur, Categorie
 from .forms import IngenieurForm, CategorieForm, CustomUserCreationForm
 
 
+@login_required
 def categorie(request):
     if request.method == 'POST':
-        form = CategorieForm(request.POST,request.FILES)
+        form = CategorieForm(request.POST, request.FILES)
         if form.is_valid():
-            cat = form.save()
+            form.save()
             return redirect('categorie')
-        else:
-            print(form.errors)
-            
-    else: 
-        form =CategorieForm()
+    else:
+        form = CategorieForm()
     return render(request, 'categorie.html', {'form': form})
 
 
+@login_required
 def categories(request):
     categorie = Categorie.objects.all()
     return render(request, 'categories.html', {'categ': categorie})
 
 
-def modifyCategorie(request,id):
-    
-    categorie= Categorie.objects.get(id=id)
+@login_required
+def modifyCategorie(request, id):
+    categorie = get_object_or_404(Categorie, id=id)
     form = CategorieForm(instance=categorie)
     if request.method == 'POST':
-        form = CategorieForm(request.POST,instance=categorie )
+        form = CategorieForm(request.POST, instance=categorie)
         if form.is_valid():
             form.save()
-        return redirect ('categories')
+        return redirect('categories')
 
-    return render (request, 'modif.html', {'form':form, 'Categorie':Categorie})
+    return render(request, 'modif.html', {'form': form, 'Categorie': Categorie})
 
 
-def deleteCategorie(request,id):
-    categorie = Categorie.objects.get(id=id)
+@login_required
+@require_POST
+def deleteCategorie(request, id):
+    categorie = get_object_or_404(Categorie, id=id)
     categorie.delete()
-    return redirect ('categories')
-    
+    return redirect('categories')
 
 
-
+@login_required
 def ajout_Ingenieur(request):
     if request.method == 'POST':
         form = IngenieurForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('Ingenieur')  # Vérifie que le nom est exactement celui défini dans urls.py
+            return redirect('Ingenieur')
     else:
         form = IngenieurForm()
     return render(request, 'ingenieur.html', {'form': form})
 
 
-
+@login_required
 def liste_ingenieurs(request):
     ingenieurs_list = Ingenieur.objects.all()
     return render(request, 'Ingenieurs.html', {'Ingenieurs': ingenieurs_list})
 
 
-def modifyIngenieur(request,id):  
-    ingenieur= Ingenieur.objects.get(id=id)
+@login_required
+def modifyIngenieur(request, id):
+    ingenieur = get_object_or_404(Ingenieur, id=id)
     form = IngenieurForm(instance=ingenieur)
     if request.method == 'POST':
-        form = IngenieurForm(request.POST,instance=ingenieur )
+        form = IngenieurForm(request.POST, instance=ingenieur)
         if form.is_valid():
             form.save()
-        return redirect ('liste_ingenieurs')
-    return render (request, 'modi_Ingenieur.html', {'form':form, 'Ingenieur':ingenieur})
-
-
+        return redirect('liste_ingenieurs')
+    return render(request, 'modi_Ingenieur.html', {'form': form, 'Ingenieur': ingenieur})
 
 
 def inscription(request):
@@ -86,11 +87,10 @@ def inscription(request):
     return render(request, 'inscription.html', {'form': form})
 
 
-
 def connexion(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
@@ -100,22 +100,25 @@ def connexion(request):
     return render(request, 'connexion.html')
 
 
-
-
-def deleteIngenieur(request,id):
-    ingenieur = Ingenieur.objects.get(id=id)
+@login_required
+@require_POST
+def deleteIngenieur(request, id):
+    ingenieur = get_object_or_404(Ingenieur, id=id)
     ingenieur.delete()
-    return redirect ('Ingenieurs')
+    return redirect('Ingenieurs')
 
 
+@login_required
 def Accueil(request):
     return render(request, 'index.html')
 
 
+@login_required
 def Dashboard(request):
     return render(request, 'dashboard.html')
 
 
+@require_POST
 def deconnexion(request):
     logout(request)
     return redirect('connexion')
