@@ -25,8 +25,9 @@ class CustomUserCreationForm(UserCreationForm):
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
         strip=False,
     )
-class Meta(UserCreationForm.Meta):
-        fields = UserCreationForm.Meta.fields + ("password1", "password2")
+
+    class Meta(UserCreationForm.Meta):
+        fields = UserCreationForm.Meta.fields
         
         
         
