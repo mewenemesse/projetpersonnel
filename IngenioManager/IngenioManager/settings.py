@@ -89,7 +89,12 @@ DATABASES = {
     }
 }
 
-LOGIN_URL = 'connexion' 
+LOGIN_URL = 'connexion'
+
+from django.contrib.messages import constants as message_constants
+MESSAGE_TAGS = {
+    message_constants.ERROR: 'danger',
+}
 
 
 # Password validation
