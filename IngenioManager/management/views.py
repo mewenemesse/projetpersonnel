@@ -1,90 +1,53 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . models import Ingenieur, Categorie
+from .models import Ingenieur, Categorie
 from .forms import IngenieurForm, CategorieForm, CustomUserCreationForm
+from .utils import handle_create_form, handle_update_form, handle_delete, handle_list
 
 
 def categorie(request):
-    if request.method == 'POST':
-        form = CategorieForm(request.POST,request.FILES)
-        if form.is_valid():
-            cat = form.save()
-            return redirect('categorie')
-        else:
-            print(form.errors)
-            
-    else: 
-        form =CategorieForm()
-    return render(request, 'categorie.html', {'form': form})
+    return handle_create_form(request, CategorieForm, 'categorie.html', 'categorie')
 
 
 def categories(request):
-    categorie = Categorie.objects.all()
-    return render(request, 'categories.html', {'categ': categorie})
+    return handle_list(request, Categorie, 'categories.html', 'categ')
 
 
-def modifyCategorie(request,id):
-    
-    categorie= Categorie.objects.get(id=id)
-    form = CategorieForm(instance=categorie)
-    if request.method == 'POST':
-        form = CategorieForm(request.POST,instance=categorie )
-        if form.is_valid():
-            form.save()
-        return redirect ('categories')
-
-    return render (request, 'modif.html', {'form':form, 'Categorie':Categorie})
+def modifyCategorie(request, id):
+    return handle_update_form(
+        request, Categorie, CategorieForm, id,
+        'modif.html', 'categories',
+        context={'Categorie': Categorie},
+    )
 
 
-def deleteCategorie(request,id):
-    categorie = Categorie.objects.get(id=id)
-    categorie.delete()
-    return redirect ('categories')
-    
-
+def deleteCategorie(request, id):
+    return handle_delete(request, Categorie, id, 'categories')
 
 
 def ajout_Ingenieur(request):
-    if request.method == 'POST':
-        form = IngenieurForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('Ingenieur')  # Vérifie que le nom est exactement celui défini dans urls.py
-    else:
-        form = IngenieurForm()
-    return render(request, 'ingenieur.html', {'form': form})
-
+    return handle_create_form(request, IngenieurForm, 'ingenieur.html', 'Ingenieur')
 
 
 def liste_ingenieurs(request):
-    ingenieurs_list = Ingenieur.objects.all()
-    return render(request, 'Ingenieurs.html', {'Ingenieurs': ingenieurs_list})
+    return handle_list(request, Ingenieur, 'Ingenieurs.html', 'Ingenieurs')
 
 
-def modifyIngenieur(request,id):  
-    ingenieur= Ingenieur.objects.get(id=id)
-    form = IngenieurForm(instance=ingenieur)
-    if request.method == 'POST':
-        form = IngenieurForm(request.POST,instance=ingenieur )
-        if form.is_valid():
-            form.save()
-        return redirect ('liste_ingenieurs')
-    return render (request, 'modi_Ingenieur.html', {'form':form, 'Ingenieur':ingenieur})
+def modifyIngenieur(request, id):
+    return handle_update_form(
+        request, Ingenieur, IngenieurForm, id,
+        'modi_Ingenieur.html', 'liste_ingenieurs',
+        context={'Ingenieur': Ingenieur},
+    )
 
 
+def deleteIngenieur(request, id):
+    return handle_delete(request, Ingenieur, id, 'Ingenieurs')
 
 
 def inscription(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('connexion')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'inscription.html', {'form': form})
-
+    return handle_create_form(request, CustomUserCreationForm, 'inscription.html', 'connexion')
 
 
 def connexion(request):
@@ -100,14 +63,6 @@ def connexion(request):
     return render(request, 'connexion.html')
 
 
-
-
-def deleteIngenieur(request,id):
-    ingenieur = Ingenieur.objects.get(id=id)
-    ingenieur.delete()
-    return redirect ('Ingenieurs')
-
-
 def Accueil(request):
     return render(request, 'index.html')
 
@@ -119,6 +74,3 @@ def Dashboard(request):
 def deconnexion(request):
     logout(request)
     return redirect('connexion')
-
-
-
